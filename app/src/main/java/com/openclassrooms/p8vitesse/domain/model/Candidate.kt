@@ -8,7 +8,7 @@ data class Candidate(
     val phoneNumber: String,
     val email: String,
     val birthDate: String,
-    val salaryExpectation: Double,
+    val salaryExpectation: Int,
     val notes: String,
     val isFavorite: Boolean
 )
