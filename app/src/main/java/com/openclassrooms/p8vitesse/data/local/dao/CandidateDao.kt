@@ -7,32 +7,65 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.openclassrooms.p8vitesse.data.model.CandidateDto
+import kotlinx.coroutines.flow.Flow
 
-// Définition du DAO pour gérer l'accès aux données des candidats dans la base de données
-@Dao
+/**
+ * DAO pour accéder aux données des candidats dans la base de données Room.
+ * Cette interface fournit des méthodes pour insérer, mettre à jour, récupérer et supprimer des candidats.
+ */@Dao
 interface CandidateDao {
 
-    // Insérer un nouveau candidat dans la base de données
+    /**
+     * Insère un candidat dans la base de données.
+     * Si un candidat avec le même ID existe déjà, il sera remplacé.
+     *
+     * @param candidate Le candidat à insérer.
+     * @return L'ID du candidat inséré.
+     */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertCandidate(candidate: CandidateDto)
+    suspend fun insertCandidate(candidate: CandidateDto): Long
 
-    // Mettre à jour les informations d'un candidat
+    /**
+     * Met à jour les informations d'un candidat.
+     *
+     * @param candidate Le candidat à mettre à jour.
+     */
     @Update
     suspend fun updateCandidate(candidate: CandidateDto)
 
-    // Supprimer un candidat spécifique de la base de données
+    /**
+     * Supprime un candidat spécifique de la base de données.
+     *
+     * @param candidate Le candidat à supprimer.
+     */
     @Delete
     suspend fun deleteCandidate(candidate: CandidateDto)
 
-    // Récupérer tous les candidats
+    /**
+     * Récupère tous les candidats de la base de données.
+     * Cette méthode retourne un Flow pour permettre de suivre les changements en temps réel.
+     *
+     * @return Un Flow qui émet la liste des candidats.
+     */
     @Query("SELECT * FROM candidates")
-    suspend fun getAllCandidates(): List<CandidateDto>
+    fun getAllCandidates(): Flow<List<CandidateDto>>
 
-    // Récupérer tous les candidats favoris
+    /**
+     * Récupère tous les candidats favoris de la base de données.
+     * Cette méthode retourne un Flow pour permettre de suivre les changements en temps réel.
+     *
+     * @return Un Flow qui émet la liste des candidats favoris.
+     */
     @Query("SELECT * FROM candidates WHERE isFavorite = 1")
-    suspend fun getFavoriteCandidates(): List<CandidateDto>
+    fun getFavoriteCandidates(): Flow<List<CandidateDto>>
 
-    // Récupérer un candidat par son ID
+    /**
+     * Récupère un candidat par son ID de la base de données.
+     * Cette méthode retourne un Flow pour permettre de suivre les changements du candidat en temps réel.
+     *
+     * @param candidateId L'ID du candidat à récupérer.
+     * @return Un Flow qui émet le candidat avec l'ID spécifié, ou null s'il n'est pas trouvé.
+     */
     @Query("SELECT * FROM candidates WHERE id = :candidateId")
-    suspend fun getCandidateById(candidateId: Long): CandidateDto?
+    fun getCandidateById(candidateId: Long): Flow<CandidateDto?>
 }
