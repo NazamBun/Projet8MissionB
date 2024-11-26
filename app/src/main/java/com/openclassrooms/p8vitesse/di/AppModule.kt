@@ -1,6 +1,9 @@
 package com.openclassrooms.p8vitesse.di
 
+import android.content.Context
+import androidx.room.Room
 import com.openclassrooms.p8vitesse.data.local.dao.CandidateDao
+import com.openclassrooms.p8vitesse.data.local.database.AppDatabase
 import com.openclassrooms.p8vitesse.data.repository.CandidateRepositoryImpl
 import com.openclassrooms.p8vitesse.domain.repository.CandidateRepository
 import com.openclassrooms.p8vitesse.domain.usecase.DeleteCandidateUseCase
@@ -12,12 +15,29 @@ import com.openclassrooms.p8vitesse.domain.usecase.UpdateCandidateUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 class AppModule {
+
+    @Provides
+    @Singleton
+    fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase {
+        return Room.databaseBuilder(
+            context,
+            AppDatabase::class.java,
+            "app_database"
+        ).build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideCandidateDao(appDatabase: AppDatabase): CandidateDao {
+        return appDatabase.candidateDao()
+    }
 
     @Provides
     @Singleton
